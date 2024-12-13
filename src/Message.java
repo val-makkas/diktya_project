@@ -1,12 +1,14 @@
+import java.io.Serial;
 import java.io.Serializable;
 
 public class Message implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
     private boolean isRead;
-    private String sender;
-    private String receiver;
-    private String body;
-    private int id;
+    private final String sender;
+    private final String receiver;
+    private final String body;
+    private final int id;
 
     public Message(int id, String sender, String receiver, String body) {
         this.id = id;
