@@ -73,6 +73,19 @@ public class MessagingClient {
                     }
                     break;
                 case "5": // Read Message
+                    int readToken = Integer.parseInt(args[3]);
+                    int messageId = Integer.parseInt(args[4]);
+
+                    output.writeInt(readToken);
+                    output.writeInt(messageId);
+
+                    output.flush();
+                    try {
+                        String response = input.readUTF();
+                        System.out.println(response);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case "6": // Delete Message
                     break;

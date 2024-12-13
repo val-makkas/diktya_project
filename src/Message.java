@@ -6,12 +6,18 @@ public class Message implements Serializable {
     private String sender;
     private String receiver;
     private String body;
+    private int id;
 
-    public Message(String sender, String receiver, String body) {
+    public Message(int id, String sender, String receiver, String body) {
+        this.id = id;
         this.sender = sender;
         this.receiver = receiver;
         this.body = body;
         this.isRead = false;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public boolean isRead() {
@@ -36,6 +42,6 @@ public class Message implements Serializable {
 
     @Override
     public String toString() {
-        return isRead ? "From: " + sender + ", Message: " + body + "*" : "From: " + sender + ", Message: " + body;
+        return !isRead ? "From: " + sender + "*" : "From: " + sender;
     }
 }

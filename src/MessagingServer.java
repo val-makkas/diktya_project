@@ -1,10 +1,12 @@
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MessagingServer {
     private static final Map<Integer, Account> accounts = new HashMap<>();
     private static final Random random = new Random();
+    private static final AtomicInteger messageIdCounter = new AtomicInteger(0); // Atomic counter for generating unique message IDs
 
     public static void main(String[] args) throws IOException {
         if (args.length != 1) {
@@ -68,6 +70,9 @@ public class MessagingServer {
                             output.writeObject(messages);
                             break;
                         case "5": // Read message
+                            int readToken = input.readInt();
+                            int messageId = input.readInt();
+                            readMessage(readToken, messageId, output);
                             break;
                         case "6": // Delete message
                             break;
@@ -128,10 +133,14 @@ public class MessagingServer {
                         return "ERROR: Recipient not found";
                     }
 
-                    Message message = new Message(sender.getUsername(), receiver, body);
+                    Message message = new Message(generateMessageId(), sender.getUsername(), receiver, body);
                     recipient.addMessage(message);
                     return "OK";
                 }
+            }
+
+            private int generateMessageId() {
+                return messageIdCounter.incrementAndGet();
             }
 
             private List<Message> showInbox(int token) {
@@ -140,5 +149,40 @@ public class MessagingServer {
                     return account != null ? account.getMessageBox() : Collections.emptyList();
                 }
             }
-        }
+
+            private void readMessage(int authToken, int messageId, ObjectOutputStream output) {
+                Account account = accounts.get(authToken);
+                if (account == null) {
+                    try {
+                        output.writeUTF("ERROR: Invalid token");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return;
+                }
+
+                List<Message> messages = account.getMessageBox();
+                Message message = null;
+                for (Message msg : messages) {
+                    if (msg.getId() == messageId) {
+                        message = msg;
+                        break;
+                    }
+                }
+                if (message == null) {
+                    try {
+                        output.writeUTF("Message ID does not exist");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return;
+                }
+                message.markRead();
+                try {
+                    output.writeUTF("(" + message.getSender() + ") " + message.getBody());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+    }
 }
