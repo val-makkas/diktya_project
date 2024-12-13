@@ -75,6 +75,9 @@ public class MessagingServer {
                             readMessage(readToken, messageId, output);
                             break;
                         case "6": // Delete message
+                            int deleteToken = input.readInt();
+                            int deleteMessageId = input.readInt();
+                            output.writeUTF(deleteMessage(deleteToken, deleteMessageId));
                             break;
                         default:
                             output.writeUTF("ERROR: Unknown command");
@@ -184,5 +187,28 @@ public class MessagingServer {
                     e.printStackTrace();
                 }
             }
+
+        public String deleteMessage(int senderToken, int messageId) {
+            synchronized (accounts) {
+                Account sender = accounts.get(senderToken);
+                if (sender == null) {
+                    return "ERROR: Invalid sender token";
+                }
+                Message messageToDelete = null;
+                for (Message message : sender.getMessageBox()) {
+                    if (message.getId() == messageId) {
+                        messageToDelete = message;
+                        break;
+                    }
+                }
+                if (messageToDelete != null) {
+                    sender.removeMessage(messageToDelete);
+                    return "OK";
+                } else {
+                    return "Message does not exist";
+                }
+            }
+        }
+
     }
 }

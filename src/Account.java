@@ -27,4 +27,8 @@ public class Account {
     public void addMessage(Message message) {
         messageBox.add(message);
     }
+
+    public void removeMessage(Message message) {
+        messageBox.remove(message);
+    }
 }

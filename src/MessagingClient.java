@@ -88,6 +88,19 @@ public class MessagingClient {
                     }
                     break;
                 case "6": // Delete Message
+                    int deleteToken = Integer.parseInt(args[3]);
+                    int deleteMessageId = Integer.parseInt(args[4]);
+
+                    output.writeInt(deleteToken);
+                    output.writeInt(deleteMessageId);
+                    output.flush();
+
+                    try {
+                        String response = input.readUTF();
+                        System.out.println(response);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 default:
                     System.out.println("Unknown command");
