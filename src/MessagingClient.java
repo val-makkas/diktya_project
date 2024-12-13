@@ -78,7 +78,6 @@ public class MessagingClient {
                     break;
                 default:
                     System.out.println("Unknown command");
-                    return;
             }
         }
     }
